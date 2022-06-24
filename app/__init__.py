@@ -46,7 +46,7 @@ def index():
 
 @app.route('/hobbies-josh')
 def hobbiesJosh():
-    return render_template('/hobbies.html', person = "Josh's Hobbies", hobby1 = "Video Games", hobby1des = "Josh likes to play video games like Lost Ark.", img1 = "./static/img/Lost Ark.png", hobby2 = "Sneakers", hobby2des = "He's also into sneakers. One of his favorites is the Jordan 3 Red Cemment shown below.", img2 = "./static/img/Jordan3.jpg" , hobby3 = "PC Builds", hobby3des = "Additionally, he also likes to research computer components and put them together. Below is a picture of the insides of a PC he be built for his parents with one of his brothers.", img3 = "./static/img/Pc build.jpg" , url=os.getenv("URL"))
+    return render_template('/hobbies.html', person = "Josh's Hobbies", hobby1 = "Video Games", hobby1des = "Josh likes to play video games like Lost Ark.", img1 = "./static/img/Lost Ark.png", hobby2 = "Sneakers", hobby2des = "He's also into sneakers. One of his favorite pairs is the Jordan 3 Red Cemment shown below.", img2 = "./static/img/Jordan3.jpg" , hobby3 = "PC Builds", hobby3des = "Additionally, he also likes to research computer components and put them together. Below is a picture of the insides of a PC he be built for his parents with one of his brothers.", img3 = "./static/img/Pc build.jpg" , url=os.getenv("URL"))
 
 @app.route('/hobbies-jul')
 def hobbiesJuli():
