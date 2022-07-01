@@ -10,41 +10,49 @@
 <body>
     {% include "navbar.html" %}
     <h1>Create a Post: </h1>
-    <form>
+    <form id="form">
 
     <!--- Name of person --->
     <label for="name">Name:</label><br>
-    <input type="text" id="name" name="name" value=""><br>
+    <input type="text" id="name" name="name"><br>
 
      <!--- Person's email --->
     <label for="email">Email:</label><br>
-    <input type="text" id="email" name="email" value=""><br>
+    <input type="text" id="email" name="email"><br>
 
     <!--- Content of Post --->
     <label for="content">Content:</label><br>
-    <input type="text" id="content" email="content" value=""><br>
+    <input type="text" id="content" name="content" ><br>
 
      <!--- Submitting post --->
-     <button type="button">Submit</button>
+     <button type="submit">Submit</button>
+
+     </form>
 
 
 
-     <script>
+    <script>
     const form = document.getElementById('form')
-    form.addEventListener('submit' , function() {
-    e.preventDefault();
-    const prepayload = new FormData(form);
-    const payload = new URLSearchParams(payload);
-    fetch('/api/timeline_post') ,{method: "POST", body: payload
-    }
-    .then(res => res.json())
-    .then(data => console.log(data))
-    .then(err => console.log(error))
-        
-    })
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const prepayload = new FormData(form);
+        const payload = new URLSearchParams(prepayload);
+
+        console.log([...prepayload]);
+        console.log([...payload]);
+
+        fetch('/api/timeline_post', { 
+            method: "POST", 
+            body: prepayload,
+        })
+        .then(res => res.json())
+        .then(data => console.log(data))
+        .catch(err => console.log(err))
+            
+    });
     
      </script>
     
-    </form>
 </body>
 </html>
