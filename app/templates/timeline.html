@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+    <form id="timeline_form" >
+        <input name="name" type="text" class="timeline-input" placeholder="Name"><br>
+        <input name="email" type="text" class="timeline-input" placeholder="Email"><br>
+        <input name="content" type="text" class="timeline-input" placeholder="Message"><br>
+        <button type="submit" class="timeline-button">Submit</button> 
+    </form>
+<br><br>
+<div id="app"></div>
+
+<!-- <script> 
+  // make sure to add onsubmit="postFormData(event)" to the form
+async function postFormData(e) {
+        // prevents going to the API return page
+        e.preventDefault();
+
+        // get form data
+        const form = document.getElementById('timeline_form');
+        const formData = new FormData(form);
+
+        // try POST request
+        try {
+            await fetch('/api/timeline_post', {
+                method: 'POST',
+                body: formData
+            })
+            console.log(formData);
+        } catch (err) {
+            console.log('An error occured');
+        } finally {
+            // reload
+            form.reset()
+            location.reload()
+        }
+    }
+</script> -->
+
+<script src="../static/timeline.js"></script>
+
+</body>
+
+</html>
