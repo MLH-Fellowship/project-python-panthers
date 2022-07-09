@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+       {% include "main/header.html" %}
+    </head>
+
+    <body>
+        {% include "navbar.html" %}
+
+        <form id="form">
+            <label for="name">First name:</label><br>
+            <input type="text" id="name" name="name"><br>
+            <label for="email">Last name:</label><br>
+            <input type="text" id="email" name="email"><br>
+            <label for="content">Content:</label><br>
+            <input type="text" id="content" name="content"><br>
+            <button type="submit">Submit</button>
+          </form>
+
+        <h1>Requests</h1>
+        <table id="requests"></table>
+    </body>
+</html>
+
+<script>
+    (function() {
+    fetch('http://137.184.63.116:5000/api/timeline_post', {
+    method: 'GET',
+    })
+    .then(data => {return data.json();
+    }).then((completedata)=>{
+        console.log(completedata);
+        let tab = 
+        `<tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Content</th>
+          <th>Created At</th>
+         </tr>`;
+
+    for(var key in completedata) {
+        for (var key1 in completedata[key]) {
+            console.log(JSON.stringify(completedata[key][key1]))
+            tab += `<tr> 
+            <td>${completedata[key][key1].name} </td>
+            <td>${completedata[key][key1].email}</td>
+            <td>${completedata[key][key1].content}</td>
+            <td>${completedata[key][key1].created_at}</td>
+            </tr>`;
+        }
+    }
+        document.getElementById("requests").innerHTML = tab;
+    })
+    const form = document.getElementById('form');
+    form.addEventListener('submit', function(e) {
+    // Prevent default behavior
+    e.preventDefault();
+    // Create payload as new FormData object
+    const payload = new FormData(form);
+    // Post the payload using Fetch
+    fetch('http://137.184.63.116:5000/api/timeline_post', {
+    method: 'POST',
+    body: payload,
+    })
+    .then(res => res.json())
+    .then(data => console.log(data))
+
+    fetch('http://137.184.63.116:5000/api/timeline_post', {
+    method: 'GET',
+    })
+    .then(data => {return data.json();
+    }).then((completedata)=>{
+        console.log(completedata);
+        let tab = 
+        `<tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Content</th>
+          <th>Created At</th>
+         </tr>`;
+
+    for(var key in completedata) {
+        for (var key1 in completedata[key]) {
+            console.log(JSON.stringify(completedata[key][key1]))
+            tab += `<tr> 
+            <td>${completedata[key][key1].name} </td>
+            <td>${completedata[key][key1].email}</td>
+            <td>${completedata[key][key1].content}</td>
+            <td>${completedata[key][key1].created_at}</td>
+            </tr>`;
+        }
+    }
+        document.getElementById("requests").innerHTML = tab;
+    })
+    })
+    })()
+</script>
