@@ -1,9 +1,46 @@
 import os
 from flask import Flask, render_template, request
 from dotenv import load_dotenv
+from peewee import *
 
-load_dotenv()
+import datetime
+from playhouse.shortcuts import model_to_dict
+import re
+load_dotenv('.env')
 app = Flask(__name__)
+
+# Below for testing
+
+if os.getenv("TESTING") == "true":
+    print("Running in test mode")
+    mydb = SqliteDatabase('file:memory?mode=memory&cache=shared', uri=True)
+else:
+    mydb = MySQLDatabase(os.getenv("MYSQL_DATABASE"),
+    user=os.getenv("MYSQL_USER"),
+    password=os.getenv("MYSQL_PASSWORD"),
+    host=os.getenv("MYSQL_HOST"),
+    port=3306
+    )
+
+# mydb = MySQLDatabase(os.getenv("MYSQL_DATABASE"), 
+# user=os.getenv("MYSQL_USER"),
+# password=os.getenv("MYSQL_PASSWORD"), 
+# host=os.getenv("MYSQL_HOST"),
+# port=3306)
+
+print(mydb)
+
+class TimelinePost(Model):
+    name = CharField()
+    email = CharField()
+    content = TextField()
+    created_at = DateTimeField(default=datetime.datetime.now)
+
+    class Meta:
+        database = mydb
+mydb.connect()
+mydb.create_tables([TimelinePost])
+
 
 @app.route('/')
 def index():
@@ -68,12 +105,43 @@ def joshEducation():
 def manEducation():
     return render_template('education.html', uni="University of Michigan", fact="I went to Novi High School in Novi, MI", pic1='/img/u-mich.jpg',pic2='img/u-mich2.jpg', map="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2952.0224758585864!2d-83.74041278454628!3d42.278043579192584!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x883cae38e7de1701%3A0x5ba14e5178e997e3!2sUniversity%20of%20Michigan!5e0!3m2!1sen!2sca!4v1654400474561!5m2!1sen!2sca",url=os.getenv("URL"))
 
+@app.route('/api/timeline_post', methods=['POST'])
+def post_time_line_post():
+    
+    if "name" not in request.form:
+        return "Invalid name", 400
+    else:
+        name = request.form['name']
+        if name == "":
+            return "Invalid name", 400
 
+    if "content" not in request.form:
+        return "Invalid content", 400
+    else:
+        content = request.form['content']
+        if content == "":
+            return "Invalid content", 400
 
+    if "email" not in request.form:
+        return "Invalid email", 400
+    else:
+        email = request.form['email']
+        if email == "" or not re.match(r"[A-Za-z0-9._-]+@[A-Za-z0-9-]+\.[A-Za-z]+", email):
+            return "Invalid email", 400
+    timeline_post = TimelinePost.create(name=name, email=email, content=content)
 
+    return model_to_dict(timeline_post)
 
+@app.route('/api/timeline_post', methods=['GET'])
+def get_time_line_post():
+    return {
+        'timeline_posts': [
+            model_to_dict(p)
+            for p in 
+            TimelinePost.select().order_by(TimelinePost.created_at.desc())
+        ]
+    }
 
-
-
-
-
+@app.route('/timeline')
+def timeline():
+    return render_template('timeline.html', title="Timeline")
