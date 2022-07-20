@@ -8,7 +8,7 @@ on:
       - main
 jobs:
   test:
-    runs-on: ubuntu:latest
+    runs-on: ubuntu-latest
     name: Run Tests
     env:
       TESTING: true
@@ -19,7 +19,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.6.8' 
+          python-version: '3.10.5' 
         
       - name: Setup Python Virtual Environment
         run: python -m venv python3-virtualenv
