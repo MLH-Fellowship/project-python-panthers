@@ -3,12 +3,12 @@ name: Deploy
 on:
   push:
     branches: 
-    - main
+      - main
   workflow_dispatch:
 
 jobs:
   deploy:
-    name: "Deploy into VPS"
+    name: "Deploy to VPS"
     runs-on: ubuntu-latest
     steps:
       - name: Configure SSH 
@@ -21,7 +21,7 @@ jobs:
             HostName $SSH_IP
             User $SSH_USER
             IdentityFile ~/.ssh/deploy-key.pem
-            StrictHostKetChecking no
+            StrictHostKeyChecking no
           END
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
