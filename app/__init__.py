@@ -64,7 +64,7 @@ def hobbiesMaansi():
 
 @app.route('/work-josh')
 def workJosh():
-    return render_template('work.html', company ="Coper Safety Supply", role = "Warehouse Production Assistant", task = " I was responsible for assisting in production based tasks around the warehouse. These tasks included but were not limited to unpacking and packing up items, staging hard hats and other gear for production, heat pressing logos onto gloves, creating boxes to store items, and labeling items for shipping and loading them unto vehicles.",  url=os.getenv("URL"))
+    return render_template('work.html', company ="Cooper Safety Supply", role = "Warehouse Production Assistant", task = " I was responsible for assisting in production based tasks around the warehouse. These tasks included but were not limited to unpacking and packing up items, staging hard hats and other gear for production, heat pressing logos onto gloves, creating boxes to store items, and labeling items for shipping and loading them unto vehicles.",  url=os.getenv("URL"))
 
 @app.route('/work-jul')
 def workJuli():
