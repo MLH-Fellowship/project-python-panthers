@@ -1,9 +1,46 @@
+
+from playhouse.shortcuts import model_to_dict
+import datetime
+import email
+from multiprocessing import context 
+from peewee import *
 import os
 from flask import Flask, render_template, request
 from dotenv import load_dotenv
 
+import re
+
+#MySQL Server setup
+
 load_dotenv()
+
 app = Flask(__name__)
+
+mydb = MySQLDatabase(os.getenv("MYSQL_DATABASE"),
+user=os.getenv("MYSQL_USER"),
+password=os.getenv("MYSQL_PASSWORD"),
+host=os.getenv("MYSQL_HOST"),
+port=3306
+)
+
+print(mydb)
+
+
+
+class TimelinePost(Model): 
+    name = CharField()
+    email = CharField()
+    context = TextField()
+    created_at = DateTimeField(default=datetime.datetime.now)
+
+    class Meta:
+        database =mydb
+
+mydb.connect()
+mydb.create_tables([TimelinePost])
+
+
+
 
 @app.route('/')
 def index():
@@ -11,7 +48,7 @@ def index():
 
 @app.route('/hobbies-josh')
 def hobbiesJosh():
-    return render_template('/hobbies.html', person = "Josh's Hobbies", hobby1 = "Video Games", hobby1des = "Josh likes to play video games like Lost Ark.", img1 = "./static/img/Lost Ark.png", hobby2 = "Sneakers", hobby2des = "He's also into sneakers. One of his favorites is the Jordan 3 Red Cemment shown below.", img2 = "./static/img/Jordan3.jpg" , hobby3 = "PC Builds", hobby3des = "Additionally, he also likes to research computer components and put them together. Below is a picture of the insides of a PC he be built for his parents with one of his brothers.", img3 = "./static/img/Pc build.jpg" , url=os.getenv("URL"))
+    return render_template('/hobbies.html', person = "Josh's Hobbies", hobby1 = "Video Games", hobby1des = "Josh likes to play video games like Lost Ark.", img1 = "./static/img/Lost Ark.png", hobby2 = "Sneakers", hobby2des = "He's also into sneakers. One of his favorite pairs is the Jordan 3 Red Cemment shown below.", img2 = "./static/img/Jordan3.jpg" , hobby3 = "PC Builds", hobby3des = "Additionally, he also likes to research computer components and put them together. Below is a picture of the insides of a PC he be built for his parents with one of his brothers.", img3 = "./static/img/Pc build.jpg" , url=os.getenv("URL"))
 
 @app.route('/hobbies-jul')
 def hobbiesJuli():
@@ -27,7 +64,7 @@ def hobbiesMaansi():
 
 @app.route('/work-josh')
 def workJosh():
-    return render_template('work.html', company ="Cooper Safety Supply", role = "Warehouse Production Assistant", task = " He was responsible for assisting in production based tasks around the warehouse. These tasks included but were not limited to unpacking and packing up items, staging hard hats and other gear for production, heat pressing logos onto gloves, creating boxes to store items, and labeling items for shipping and loading them unto vehicles.",  url=os.getenv("URL"))
+    return render_template('work.html', company ="Cooper Safety Supply", role = "Warehouse Production Assistant", task = " I was responsible for assisting in production based tasks around the warehouse. These tasks included but were not limited to unpacking and packing up items, staging hard hats and other gear for production, heat pressing logos onto gloves, creating boxes to store items, and labeling items for shipping and loading them unto vehicles.",  url=os.getenv("URL"))
 
 @app.route('/work-jul')
 def workJuli():
@@ -70,10 +107,60 @@ def manEducation():
 
 
 
+# Timeline route
+@app.route('/timeline')
+def timeline():
+    return render_template('timeline.html', title="Timeline")
+
+
+
+# post app route
+emailFormat = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+@app.route('/api/timeline_post', methods=['POST'])
+def post_time_line_post():
+    try:
+        name = request.form['name']
+    except:
+        return "Invalid name", 400
+    name = request.form['name']
+
+    email = request.form['email']
+    if not re.fullmatch(emailFormat, email):
+        return "Invalid email", 400
+        
+    try:
+        content = request.form['content']
+    except:
+        return "Invalid content", 400
+    content = request.form['content']
+    timeline_post = TimelinePost.create(name=name, email=email, context=content)
+
+    return model_to_dict(timeline_post)
 
 
 
 
+@app.route('/api/timeline_post', methods=['GET'])
+def get_time_line_post():
+    return {
+        'timeline_posts': [
+            model_to_dict(p)
+            for p in
+TimelinePost.select().order_by(TimelinePost.created_at.desc())
+        ]
+        
+
+    }
 
 
+if os.getenv("TESTING") == "true":
+    print("Running in test mode")
+    mydb = SqliteDatabase('file:memory?mode=memory&cache=shared', uri=True)
+else:
+    mydb =MySQLDatabase(os.getenv("MYSQL_DATABASE"),
+        user=os.getenv("MYSQL_USER"),
+        password=os.getenv("MYSQL_PASSWORD"),
+        host=os.getenv("MYSQL_HOST"),
+        port=3306
+    )
 
